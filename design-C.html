@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Plants Count — Variant C: Mathematical Artifact</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --off-white: #f8f8f8;
+      --gold: #c8a84b;
+      --mid: #888;
+      --light: #ddd;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--black);
+      background: var(--white);
+    }
+
+    .page { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+ 
+    header {
+      padding: 80px 0 20px;
+      border-bottom: 1px solid var(--black);
+    }
+
+    .kicker {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 11px; font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid); margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(40px, 8vw, 68px);
+      line-height: 0.95;
+      font-weight: bold;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+    }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 13px; color: var(--mid);
+      margin-top: 20px; margin-bottom: 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .hook {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 17px;
+      border-top: 1px solid var(--black);
+      padding-top: 10px; color: #555;
+    }
+
+  
+    section { padding: 60px 0; border-bottom: 1px solid var(--black); }
+    section:last-of-type { border-bottom: none; padding-bottom: 80px; }
+
+    h2 {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--black); margin-bottom: 36px;
+      padding-bottom: 8px;
+    }
+
+    p { margin-bottom: 18px; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: bold; }
+    em { font-style: italic; }
+
+    
+    .photo-box {
+      width: 100%;
+      aspect-ratio: 16 / 9;       
+      border: 1px solid var(--black);
+      overflow: hidden;           
+      margin-bottom: 32px;
+      background: var(--off-white);
+    }
+
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;        
+      display: block;
+    }
+
+    /* ── Spiral count ── */
+    .spiral-count {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--black); margin: 28px 0;
+    }
+    .count-card {
+      padding: 20px 16px; text-align: center;
+      border-right: 1px solid var(--black);
+    }
+    .count-card:last-child { border-right: none; }
+    .count-card .number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 17px; font-weight: 700; line-height: 1;
+    }
+    .count-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--mid); margin-top: 6px; letter-spacing: 0.06em;
+    }
+
+  
+    .sim-framing {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 15px; color: var(--mid);
+      margin-bottom: 28px;
+      border-left: 2px solid var(--black); padding-left: 16px; line-height: 1.5;
+    }
+
+    .slider-label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .slider-label .param {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--mid); letter-spacing: 0.08em;
+    }
+    #angle-display-c {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 28px; font-weight: 700; color: var(--black);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 2px;
+      background: var(--black); outline: none; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px; height: 16px; border-radius: 0;
+      background: var(--black); cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 0;
+      background: var(--black); cursor: pointer; border: none;
+    }
+
+    .angle-hints {
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--mid); margin-top: 6px; margin-bottom: 24px; letter-spacing: 0.06em;
+    }
+
+    #canvas-container-c { display: flex; justify-content: center; margin: 0 0 28px; }
+
+    .sim-callout {
+      border: 1px solid var(--black); padding: 18px 20px;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 13px; line-height: 1.6; background: var(--off-white);
+    }
+
+    
+    .formula-block {
+      margin: 32px 0; padding: 28px 0;
+      border-top: 1px solid var(--black); border-bottom: 1px solid var(--black);
+    }
+    .formula-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--mid);
+      margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .formula { font-size: clamp(20px, 3.5vw, 28px); font-weight: bold; line-height: 1.4; margin-bottom: 8px; }
+    .math-note { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mid); line-height: 1.6; }
+
+    footer {
+      padding: 32px 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--mid); text-align: center; border-top: 1px solid var(--black);
+      letter-spacing: 0.08em;
+    }
+
+    .variant-badge {
+      position: fixed; top: 12px; right: 12px;
+      background: var(--black); color: var(--white);
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.1em;
+      padding: 6px 12px; z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="page">
+
+    <header>
+      <h1>The Mathematical Beauty of Nature<br>
+      <p class="subtitle">The Hidden Mathematics in Nature</p>
+      <p class="hook">The golden ratio can be seen everywhere in the world around us. The Sunflower is a perfect example of math in nature.</p>
+    </header>
+
+    <section>
+      <h2>01 &mdash; Observation</h2>
+
+    
+      <div class="photo-box">
+        <img src="ratioSunflower.jpg" alt="Sunflower head showing clockwise and counterclockwise spiral patterns">
+      </div>
+
+      <p>
+        Look at a sunflower head. Notice how the spiral matches with the sunflower seeds perfectly. 
+        You can see these spirals everywhere in nature.
+      </p>
+
+      <div class="spiral-count">
+        <div class="count-card"><div class="number">1 · 1 · 2 · 3</div><div class="label">start</div></div>
+        <div class="count-card"><div class="number">5 · 8 · 13 · 21</div><div class="label">middle</div></div>
+        <div class="count-card"><div class="number">34 · 55 · 89</div><div class="label">sunflower range</div></div>
+      </div>
+
+      <p>
+        Those are consecutive Fibonacci numbers: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55…
+        This pattern can be seen on the sunflower. But why?
+      </p>
+    </section>
+
+    <section>
+      <h2>02 &mdash; Simulation</h2>
+
+      <p class="sim-framing">
+        What happens if a plant grows each seed<br>
+        at a slightly different angle? Test it here:
+      </p>
+
+      <div class="slider-label">
+        <span class="param">Angle =</span>
+        <span id="angle-display-c">137.5°</span>
+      </div>
+      <input type="range" id="slider-c" min="100" max="180" step="0.1" value="137.5"
+             aria-label="Seed divergence angle in degrees">
+      <div class="angle-hints">
+        <span>100°</span>
+        <span> Angles to try: <br>
+          90 &nbsp;·&nbsp; 120 &nbsp;·&nbsp; 137.5</span>
+        <span>180°</span>
+      </div>
+
+      <div id="canvas-container-c"></div>
+
+      <div class="sim-callout">
+        137.5° = The Golden Angle<br>
+        It is the only value where seeds never cluster or leave gaps<br>
+        Even just a slight shift in the angle breaks this pattern<br>
+        The spirals you see are a result of this rule
+      </div>
+    </section>
+
+    <section>
+      <h2>03 &mdash; Mathematical Reasoning</h2>
+
+      <p>The golden angle derives from φ (phi), the golden ratio.</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Equation</div>
+        <div class="formula"><sup>1+√5</sup>&frasl;<sub>2</sub> ≈ 1.618</div>
+      </div>
+
+      <div class="formula-block" style="border-top: none; margin-top: 0;">
+        <div class="formula-label">Derivation</div>
+        <div class="formula">
+          Golden angle = <sup>360º</sup>&frasl;<sub>φ²</sub>
+          &asymp; <sup>360º</sup>&frasl;<sub>2.618</sub> <br>
+          &asymp; 137.508°
+        </div>
+        <div class="math-note">φ is irrational. Unlike pi or e, it was unable to be approximated well since it needs to be so precise.<br>
+        Seeds at this angle never repeat a direction</div>
+      </div>
+
+      <p>
+        If a plant places seeds at a rational angle like 120° (<sup>1</sup>&frasl;<sub>3</sub> of a circle), the pattern will repeat. You get
+        3 straight lines with a lot of wasted space. The golden angle never repeats (irrationality), so every seed is
+        always positioned in the largest available gap.
+      </p>
+      <p>
+        The spirals seen are a result of this packing.
+      </p>
+    </section>
+
+    <section>
+      <h2>04 &mdash; Biological Reasoning</h2>
+
+      <p>
+        The Fibonacci sequence was not chosen by nature. Instead, natural 
+        selection chose the usage of the golden angle in plant growth. At this angle,
+        this rule maximizes space and prevents leaves from blocking each other, allowing the plant to absorb the most sunlight for nutrient production. 
+      </p>
+      <p>
+        The Fibonacci spirals we see are the byproduct of 
+        this efficiency chosen by the principles of evolution. 
+        It is not a result of chance, but an emergent property we can observe. 
+        Math explains how Fibonacci works, while Biology explains why it's chosen.
+      </p>
+    </section>
+
+    <footer> By Krish Mohanty &nbsp; •&nbsp; Claude Code was used as support
+  </div>
+
+  <script>
+   
+    var growthAngle = 137.5;
+    var n = 0;
+    var animId = null;
+    var MAX_SEEDS = 500;
+    var C = 5; 
+
+   
+    var canvas = document.createElement('canvas');
+    var size = Math.min(500, window.innerWidth - 48);
+    canvas.width = size;
+    canvas.height = size;
+    document.getElementById('canvas-container-c').appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+
+    function drawNextSeed() {
+      if (n >= MAX_SEEDS) return; 
+
+      var theta = n * (growthAngle * Math.PI / 180); 
+      var r = C * Math.sqrt(n);                      
+      var x = canvas.width  / 2 + r * Math.cos(theta);
+      var y = canvas.height / 2 + r * Math.sin(theta);
+
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#e8d5a3'; // golden seed colour
+      ctx.fill();
+
+      n++;
+      animId = requestAnimationFrame(drawNextSeed);
+    }
+
+    function restart() {
+      if (animId) cancelAnimationFrame(animId);
+      n = 0;
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height); 
+      drawNextSeed();
+    }
+
+    
+    restart();
+
+   
+    window.addEventListener('resize', function () {
+      var newSize = Math.min(500, window.innerWidth - 48);
+      canvas.width = newSize;
+      canvas.height = newSize;
+      restart();
+    });
+
+    
+    var slider  = document.getElementById('slider-c');
+    var display = document.getElementById('angle-display-c');
+
+    slider.addEventListener('input', function () {
+      growthAngle = parseFloat(this.value);
+      display.textContent = growthAngle.toFixed(1) + '°';
+      restart();
+    });
+  </script>
+</body>
+</html>
